@@ -9,5 +9,12 @@ class Morningnews extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'news_text'];
+    // Specify the table name
+    protected $table = 'morning_news';
+
+    // Allow mass assignment for 'title' and 'content'
+    protected $fillable = [
+        'title',
+        'news_text'  // Changed from 'content' to match the migration
+    ];
 }

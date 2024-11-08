@@ -11,7 +11,9 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         // TASK: Currently this statement fails. Fix the underlying issue.
+
         Project::create([
+
             'name' => $request->name
         ]);
 
@@ -26,23 +28,28 @@ class ProjectController extends Controller
         //   where name = $request->old_name
 
         // Insert Eloquent statement below
-
+        Project::where('name', $request->old_name)
+            ->update(['name' => $request->new_name]);
         return redirect('/')->with('success', 'Projects updated');
     }
 
+    // In app/Http/Controllers/ProjectController.php
     public function destroy($projectId)
     {
+        // Soft delete the project
         Project::destroy($projectId);
 
-        // TASK: change this Eloquent statement to include the soft-deletes records
-        $projects = Project::all();
+        // Get all projects including soft deleted ones
+        $projects = Project::withTrashed()
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        return view('projects.index', compact('projects'));
+        return view('projects.index', ['projects' => $projects]);
     }
 
     public function store_with_stats(Request $request)
     {
-        // TASK: on creating a new project, create an Observer event to run SQL
+        // TASK: on creating a new project, create an Observers event to run SQL
         //   update stats set projects_count = projects_count + 1
         $project = new Project();
         $project->name = $request->name;
